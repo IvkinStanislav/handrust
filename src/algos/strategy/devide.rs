@@ -17,8 +17,45 @@ pub fn select_sort(mut data: Vec<usize>) -> Vec<usize> {
     data
 }
 
+// переписать, создание data.iter_mut() - лишнее
 pub fn merge(data: Vec<Vec<usize>>) -> Vec<usize> {
-    todo!()
+    let mut res = vec![];
+    let mut data: Vec<_> = data
+        .into_iter()
+        .filter(|d| !d.is_empty())
+        .map(|d| d.into_iter().peekable())
+        .collect();
+
+    if data.is_empty() {
+        return vec![];
+    }
+
+    loop {
+        let mut min_and_target = None;
+
+        for (i, array) in data.iter_mut().enumerate() {
+            let Some(&e) = array.peek() else {
+                continue;
+            };
+
+            if let Some((min, _)) = min_and_target {
+                if e < min {
+                    min_and_target = Some((e, i));
+                }
+            } else {
+                min_and_target = Some((e, i));
+            }
+        }
+
+        if let Some((min, target)) = min_and_target {
+            res.push(min);
+            data[target].next();
+        } else {
+            break;
+        }
+    }
+
+    res
 }
 
 pub fn merge_sort(data: Vec<usize>) -> Vec<usize> {
@@ -46,7 +83,7 @@ mod tests {
     fn merge_test() {
         assert_eq!(
             merge(vec![vec![1, 2, 3], vec![1, 2], vec![3, 4, 5, 6]]),
-            vec![1, 1, 2, 2, 3, 3, 5, 6, 7]
+            vec![1, 1, 2, 2, 3, 3, 4, 5, 6]
         );
         assert_eq!(
             merge(vec![vec![1, 10], vec![7, 9, 11]]),
