@@ -17,39 +17,25 @@ pub fn select_sort(mut data: Vec<usize>) -> Vec<usize> {
     data
 }
 
-// переписать, создание data.iter_mut() - лишнее
 pub fn merge(data: Vec<Vec<usize>>) -> Vec<usize> {
     let mut res = vec![];
-    let mut data: Vec<_> = data
-        .into_iter()
-        .filter(|d| !d.is_empty())
-        .map(|d| d.into_iter().peekable())
-        .collect();
-
-    if data.is_empty() {
-        return vec![];
-    }
+    let mut data: Vec<_> = data.into_iter().map(|d| d.into_iter().peekable()).collect();
 
     loop {
-        let mut min_and_target = None;
-
-        for (i, array) in data.iter_mut().enumerate() {
-            let Some(&e) = array.peek() else {
-                continue;
-            };
-
-            if let Some((min, _)) = min_and_target {
-                if e < min {
-                    min_and_target = Some((e, i));
+        let min = data
+            .iter_mut()
+            .filter_map(|iter| {
+                if let Some(&item) = iter.peek() {
+                    Some((iter, item))
+                } else {
+                    None
                 }
-            } else {
-                min_and_target = Some((e, i));
-            }
-        }
+            })
+            .min_by(|(_, item1), (_, item2)| item1.cmp(item2))
+            .and_then(|(iter, _)| iter.next());
 
-        if let Some((min, target)) = min_and_target {
+        if let Some(min) = min {
             res.push(min);
-            data[target].next();
         } else {
             break;
         }
@@ -59,7 +45,13 @@ pub fn merge(data: Vec<Vec<usize>>) -> Vec<usize> {
 }
 
 pub fn merge_sort(data: Vec<usize>) -> Vec<usize> {
-    todo!()
+    if data.len() <= 1 {
+        return data;
+    }
+
+    let left = merge_sort(data[..data.len() / 2].to_vec());
+    let right = merge_sort(data[data.len() / 2..].to_vec());
+    merge(vec![left, right])
 }
 
 #[cfg(test)]
@@ -95,13 +87,13 @@ mod tests {
         );
     }
 
-    // #[test]
-    // fn merge_sort_test() {
-    //     assert_eq!(
-    //         merge_sort(vec![13, 17, 37, 73, 31, 19, 23]),
-    //         vec![13, 17, 19, 23, 31, 37, 73]
-    //     );
-    //     assert_eq!(merge_sort(vec![18, 20, 3, 17]), vec![3, 17, 18, 20]);
-    //     assert_eq!(merge_sort(vec![0, 11, 0]), vec![0, 0, 11]);
-    // }
+    #[test]
+    fn merge_sort_test() {
+        assert_eq!(
+            merge_sort(vec![13, 17, 37, 73, 31, 19, 23]),
+            vec![13, 17, 19, 23, 31, 37, 73]
+        );
+        assert_eq!(merge_sort(vec![18, 20, 3, 17]), vec![3, 17, 18, 20]);
+        assert_eq!(merge_sort(vec![0, 11, 0]), vec![0, 0, 11]);
+    }
 }
