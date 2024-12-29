@@ -1,13 +1,25 @@
-pub fn gcd(a: usize, b: usize) -> usize {
-    todo!()
+pub fn gcd(mut a: usize, mut b: usize) -> usize {
+    while a > 0 && b > 0 {
+        if a >= b {
+            a %= b;
+        } else {
+            b %= a;
+        }
+    }
+
+    a.max(b)
 }
 
 pub fn lcm(a: usize, b: usize) -> usize {
-    todo!()
+    a / gcd(a, b) * b
 }
 
 pub fn euclid_max_steps(n: usize) -> (usize, usize) {
-    todo!()
+    let (mut a, mut b) = (0, 1);
+    while a <= n && b <= n {
+        (a, b) = (a + b, a);
+    }
+    (a - b, b)
 }
 
 #[cfg(test)]
