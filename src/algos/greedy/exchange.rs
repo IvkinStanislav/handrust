@@ -1,54 +1,52 @@
 use std::collections::HashSet;
 
-pub fn exchange(n: usize) -> HashSet<Vec<usize>> {
+pub fn exchange_variants(n: usize) -> HashSet<Vec<usize>> {
     let mut acc = HashSet::new();
-    exchange_internal(get_values_1_5_10(n), &mut acc);
+    exchange_variants_internal_1_5_10(counts_of_1_5_10(n), &mut acc);
 
     let mut res = HashSet::new();
-    for values in acc {
-        res.insert([vec![1; values[0]], vec![5; values[1]], vec![10; values[2]]].concat());
+    for counts in acc {
+        res.insert([vec![1; counts[0]], vec![5; counts[1]], vec![10; counts[2]]].concat());
     }
     res
 }
 
-fn get_values_1_5_10(n: usize) -> [usize; 3] {
+/// [count_of_1, count_of_5, count_of_10]
+fn counts_of_1_5_10(n: usize) -> [usize; 3] {
     [n % 5, (n % 10) / 5, n / 10]
 }
 
-// acc = [count_of_1, count_of_5, count_of_10]
-fn exchange_internal(values: [usize; 3], acc: &mut HashSet<[usize; 3]>) {
-    if values[2] > 0 {
-        let mut vs = values;
-        vs[2] -= 1;
-        vs[1] += 2;
-        acc.insert(vs);
-        exchange_internal(vs, acc);
+fn exchange_variants_internal_1_5_10(counts: [usize; 3], acc: &mut HashSet<[usize; 3]>) {
+    acc.insert(counts);
+    let [count_of_1, count_of_5, count_of_10] = counts;
+
+    if counts[2] > 0 {
+        let new_counts = [count_of_1, count_of_5 + 2, count_of_10 - 1];
+        acc.insert(new_counts);
+        exchange_variants_internal_1_5_10(new_counts, acc);
     }
 
-    if values[1] > 0 {
-        let mut vs = values;
-        vs[1] -= 1;
-        vs[0] += 5;
-        acc.insert(vs);
-        exchange_internal(vs, acc);
+    if counts[1] > 0 {
+        let new_counts = [count_of_1 + 5, count_of_5 - 1, count_of_10];
+        acc.insert(new_counts);
+        exchange_variants_internal_1_5_10(new_counts, acc);
     }
-
-    acc.insert(values);
 }
 
 pub fn exchange_1_5_10_20_50(n: usize) -> Vec<usize> {
-    let values = get_values_1_5_10_20_50(n);
+    let counts = counts_of_1_5_10_20_50(n);
     [
-        vec![1; values[0]],
-        vec![5; values[1]],
-        vec![10; values[2]],
-        vec![20; values[3]],
-        vec![50; values[4]],
+        vec![1; counts[0]],
+        vec![5; counts[1]],
+        vec![10; counts[2]],
+        vec![20; counts[3]],
+        vec![50; counts[4]],
     ]
     .concat()
 }
 
-fn get_values_1_5_10_20_50(n: usize) -> [usize; 5] {
+/// [count_of_1, count_of_5, count_of_10, count_of_20, count_of_50]
+fn counts_of_1_5_10_20_50(n: usize) -> [usize; 5] {
     [
         n % 5,
         (n % 10) / 5,
@@ -64,9 +62,9 @@ mod tests {
 
     #[test]
     #[rustfmt::skip]
-    fn exchange_test() {
+    fn exchange_variants_test() {
         assert_eq!(
-            exchange(15),
+            exchange_variants(15),
             {
                 let mut set = HashSet::new();
                 set.insert(vec![5, 10]);
@@ -79,7 +77,7 @@ mod tests {
             }
         );
         assert_eq!(
-            exchange(10),
+            exchange_variants(10),
             {
                 let mut set = HashSet::new();
                 set.insert(vec![10]);
@@ -90,7 +88,7 @@ mod tests {
             }
         );
         assert_eq!(
-            exchange(1),
+            exchange_variants(1),
             {
                 let mut set = HashSet::new();
                 set.insert(vec![1]);
@@ -98,7 +96,7 @@ mod tests {
             }
         );
         assert_eq!(
-            exchange(5),
+            exchange_variants(5),
             {
                 let mut set = HashSet::new();
                 set.insert(vec![5]);
