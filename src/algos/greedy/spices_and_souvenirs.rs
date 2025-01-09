@@ -1,9 +1,31 @@
-pub fn spices(w: usize, counts: Vec<(usize, usize)>) -> f64 {
-    todo!()
+pub fn spices(mut max_weight: usize, counts: Vec<(usize, usize)>) -> f64 {
+    let mut counts: Vec<_> = counts
+        .iter()
+        .map(|&(c, w)| (c, w, c as f64 / w as f64))
+        .collect();
+    counts.sort_by(|(_, _, cpw1), (_, _, cpw2)| cpw2.total_cmp(cpw1));
+
+    let mut sum = 0.0;
+    for (cost, weight, cost_per_weight) in counts {
+        if max_weight > weight {
+            sum += cost as f64;
+            max_weight -= weight;
+        } else {
+            sum += cost_per_weight * max_weight as f64;
+            break;
+        }
+    }
+
+    round(sum, 3)
 }
 
 pub fn souvenirs(s: usize, counts: Vec<usize>) -> usize {
     todo!()
+}
+
+fn round(x: f64, decimals: u32) -> f64 {
+    let y = 10i32.pow(decimals) as f64;
+    (x * y).round() / y
 }
 
 #[cfg(test)]
