@@ -19,8 +19,18 @@ pub fn spices(mut max_weight: usize, counts: Vec<(usize, usize)>) -> f64 {
     round(sum, 3)
 }
 
-pub fn souvenirs(s: usize, counts: Vec<usize>) -> usize {
-    todo!()
+pub fn souvenirs(mut money: usize, mut costs: Vec<usize>) -> usize {
+    costs.sort();
+    let mut sum = 0;
+    for cost in costs {
+        if money >= cost {
+            sum += 1;
+            money -= cost;
+        } else {
+            break;
+        }
+    }
+    sum
 }
 
 fn round(x: f64, decimals: u32) -> f64 {
@@ -42,7 +52,7 @@ mod tests {
 
     #[test]
     fn souvenirs_test() {
-        assert_eq!(souvenirs(50, vec![20, 50, 30]), 20);
+        assert_eq!(souvenirs(50, vec![20, 50, 30]), 2);
         assert_eq!(souvenirs(1, vec![0, 1, 0, 1, 0, 1, 0, 1, 0, 1]), 6);
         assert_eq!(souvenirs(10, vec![500]), 0);
     }
