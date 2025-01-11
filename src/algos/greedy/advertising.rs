@@ -1,9 +1,30 @@
-pub fn company(prices: Vec<usize>, clicks: Vec<usize>) -> usize {
-    todo!()
+pub fn company(mut prices: Vec<usize>, mut clicks: Vec<usize>) -> usize {
+    prices.sort_unstable_by(|a, b| b.cmp(a));
+    clicks.sort_unstable_by(|a, b| b.cmp(a));
+
+    prices
+        .into_iter()
+        .zip(clicks.into_iter())
+        .map(|(p, c)| p * c)
+        .sum()
 }
 
-pub fn billboard(n: usize, w: usize, applications: Vec<(usize, usize)>) -> usize {
-    todo!()
+pub fn billboard(n: usize, w: usize, mut applications: Vec<(usize, usize)>) -> usize {
+    applications.sort_unstable_by(|(p1, _), (p2, _)| p2.cmp(p1));
+    let mut w_max = n * w;
+    let mut sum = 0;
+
+    for (p, w) in applications {
+        if w <= w_max {
+            w_max -= w;
+            sum += p * w;
+        } else {
+            sum += p * w_max;
+            break;
+        }
+    }
+
+    sum
 }
 
 #[cfg(test)]
