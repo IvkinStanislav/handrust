@@ -1,9 +1,40 @@
-pub fn collection_of_signatures(coordinates: Vec<(usize, usize)>) -> Vec<usize> {
-    todo!()
+pub fn collection_of_signatures(mut coordinates: Vec<(usize, usize)>) -> Vec<usize> {
+    use std::cmp::Ordering::*;
+
+    coordinates.sort_by(|(l1, r1), (l2, r2)| match r1.cmp(r2) {
+        Equal => l1.cmp(l2),
+        ord => ord,
+    });
+
+    let mut result = vec![];
+    while let Some(&(champ_l, champ_r)) = coordinates.first() {
+        coordinates.retain(|&(l, r)| champ_r < l || champ_l > r);
+        result.push(champ_r);
+    }
+
+    result
 }
 
-pub fn covering(l: usize, coordinates: Vec<usize>) -> usize {
-    todo!()
+pub fn covering(l: usize, mut coordinates: Vec<usize>) -> usize {
+    let mut sum_segments;
+    let mut next_segment;
+    coordinates.sort_unstable();
+
+    if let Some(first) = coordinates.first() {
+        sum_segments = 1;
+        next_segment = first + l;
+    } else {
+        return 0;
+    }
+
+    for x in coordinates.into_iter().skip(1) {
+        if x > next_segment {
+            next_segment = x + l;
+            sum_segments += 1;
+        }
+    }
+
+    sum_segments
 }
 
 pub fn min_segments_sum(k: usize, coordinates: Vec<usize>) -> usize {
