@@ -2,11 +2,7 @@ pub fn company(mut prices: Vec<usize>, mut clicks: Vec<usize>) -> usize {
     prices.sort_unstable_by(|a, b| b.cmp(a));
     clicks.sort_unstable_by(|a, b| b.cmp(a));
 
-    prices
-        .into_iter()
-        .zip(clicks.into_iter())
-        .map(|(p, c)| p * c)
-        .sum()
+    prices.into_iter().zip(clicks).map(|(p, c)| p * c).sum()
 }
 
 pub fn billboard(n: usize, w: usize, mut applications: Vec<(usize, usize)>) -> usize {
