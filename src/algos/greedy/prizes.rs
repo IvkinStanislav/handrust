@@ -1,5 +1,7 @@
 pub fn prizes_count(n: usize) -> usize {
-    todo!()
+    let d = f64::sqrt(1.0 + 8.0 * n as f64);
+    let answer = (d - 1.0) / 2.0;
+    answer as usize
 }
 
 #[cfg(test)]
