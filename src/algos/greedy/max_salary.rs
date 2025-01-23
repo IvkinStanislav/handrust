@@ -34,8 +34,28 @@ fn first_digit_and_remainder(n: usize) -> (usize, Option<usize>) {
     }
 }
 
-pub fn tennis_tournament(k: usize, abilities: Vec<usize>) -> usize {
-    todo!()
+pub fn tennis_tournament(k: usize, mut abilities: Vec<usize>) -> usize {
+    let target = abilities.remove(k - 1);
+    abilities.sort_unstable();
+    let mut abilities = abilities.as_mut_slice();
+    let mut steps = 0;
+
+    while abilities.len() > 1 && abilities[0] < target {
+        steps += 1;
+        if abilities.len() % 2 == 1 {
+            (_, abilities) = abilities.split_at_mut(1);
+        }
+        for i in 0..abilities.len() / 2 {
+            abilities.swap(i, 2 * i + 1);
+        }
+        (abilities, _) = abilities.split_at_mut(abilities.len() / 2);
+    }
+
+    if abilities.len() == 1 && abilities[0] < target {
+        steps += 1;
+    }
+
+    steps
 }
 
 pub fn chess_kings(r: usize, c: usize) -> usize {
