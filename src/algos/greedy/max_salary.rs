@@ -1,5 +1,3 @@
-use std::usize;
-
 pub fn max_salary(mut numbers: Vec<usize>) -> usize {
     numbers.sort_unstable_by(|&n1, &n2| max_salary_comparator(n1, n2));
 
@@ -36,10 +34,10 @@ fn first_digit_and_remainder(n: usize) -> (usize, Option<usize>) {
 
 pub fn tennis_tournament(k: usize, mut abilities: Vec<usize>) -> usize {
     let target = abilities.remove(k - 1);
-    abilities.sort_unstable();
     let mut abilities = abilities.as_mut_slice();
-    let mut steps = 0;
+    abilities.sort_unstable();
 
+    let mut steps = 0;
     while abilities.len() > 1 && abilities[0] < target {
         steps += 1;
         if abilities.len() % 2 == 1 {
@@ -59,7 +57,11 @@ pub fn tennis_tournament(k: usize, mut abilities: Vec<usize>) -> usize {
 }
 
 pub fn chess_kings(r: usize, c: usize) -> usize {
-    todo!()
+    match (r, c) {
+        (1, _) => c - c / 2,
+        (_, 1) => r - r / 2,
+        _ => r * c - ((r / 2) * (c / 2)),
+    }
 }
 
 #[cfg(test)]
@@ -70,7 +72,7 @@ mod tests {
     #[rustfmt::skip]
     fn first_digit_and_remainder_test() {
         assert_eq!(first_digit_and_remainder(0), (0, None));
-        assert_eq!(first_digit_and_remainder(7), (7, Some(0)));
+        assert_eq!(first_digit_and_remainder(7), (7, None));
         assert_eq!(first_digit_and_remainder(28), (2, Some(8)));
         assert_eq!(first_digit_and_remainder(564), (5, Some(64)));
     }
