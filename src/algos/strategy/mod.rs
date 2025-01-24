@@ -1,4 +1,4 @@
-pub mod devide;
+pub mod divide_and_conquer;
 pub mod dp;
 pub mod greedy;
 pub mod rand;
