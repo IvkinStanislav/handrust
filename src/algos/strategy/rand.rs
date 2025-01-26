@@ -8,9 +8,24 @@ pub fn quick_sort(mut data: Vec<usize>) -> Vec<usize> {
     data
 }
 
-fn lomuto_internal(data: &mut [usize], target: usize) -> usize {
+fn quick_sort_internal(data: &mut [usize]) {
+    if data.len() <= 2 {
+        if data.len() == 2 && data[0] > data[1] {
+            data.swap(0, 1);
+        }
+        return;
+    }
+
+    let target = rand::random::<usize>() % data.len();
+    let (left, right) = lomuto_internal(data, target);
+
+    quick_sort_internal(left);
+    quick_sort_internal(right);
+}
+
+fn lomuto_internal(data: &mut [usize], target: usize) -> (&mut [usize], &mut [usize]) {
     if data.len() <= 1 {
-        return 0;
+        return (data, &mut []);
     }
 
     data.swap(0, target);
@@ -22,42 +37,7 @@ fn lomuto_internal(data: &mut [usize], target: usize) -> usize {
         }
     }
     data.swap(0, pointer - 1);
-    pointer - 1
-}
-
-// fn lomuto_internal(data: &mut [usize], mut target: usize) -> usize {
-//     if data.len() <= 1 {
-//         return 0;
-//     }
-
-//     let mut pointer = 0;
-//     for i in 0..data.len() {
-//         if data[i] <= data[target] {
-//             data.swap(i, pointer);
-//             if i == target {
-//                 target = pointer
-//             }
-//             pointer += 1;
-//         }
-//     }
-//     data.swap(target, pointer - 1);
-//     pointer - 1
-// }
-
-fn quick_sort_internal(data: &mut [usize]) {
-    if data.len() <= 2 {
-        if data.len() == 2 && data[0] > data[1] {
-            data.swap(0, 1);
-        }
-        return;
-    }
-
-    let target = rand::random::<usize>() % data.len();
-    let mid = lomuto_internal(data, target);
-    let (left, right) = data.split_at_mut(mid);
-
-    quick_sort_internal(left);
-    quick_sort_internal(right);
+    data.split_at_mut(pointer - 1)
 }
 
 #[cfg(test)]
