@@ -51,7 +51,30 @@ fn lomuto(data: &mut [usize], target: usize) -> (&mut [usize], &mut [usize], &mu
 }
 
 pub fn quicksort_worst_input(n: usize) -> Vec<usize> {
-    todo!()
+    let mut data: Vec<_> = (0..n).collect();
+    quicksort_worst_input_internal(&mut data);
+    data
+}
+
+pub fn quicksort_worst_input_internal(data: &mut Vec<usize>) {
+    let len = data.len();
+    if len == 1 {
+        return;
+    }
+
+    let Some((max_i, _)) = data.iter().enumerate().max_by(|(_, a), (_, b)| a.cmp(b)) else {
+        return;
+    };
+
+    let m = len / 2;
+    data.swap(m, max_i);
+    data.swap(0, m);
+    data.swap(len - 1, 0);
+    let Some(max) = data.pop() else {
+        return;
+    };
+    quicksort_worst_input_internal(data);
+    data.insert(data.len() / 2, max);
 }
 
 #[cfg(test)]
@@ -117,7 +140,8 @@ mod tests {
 
     #[test]
     fn quicksort_worst_input_test() {
-        assert_eq!(quicksort_worst_input(2), vec![2, 1]);
-        assert_eq!(quicksort_worst_input(4), vec![2, 4, 1, 3]);
+        assert_eq!(quicksort_worst_input(2), vec![1, 0]);
+        // assert_eq!(quicksort_worst_input(4), vec![1, 3, 0, 2]);
+        assert_eq!(quicksort_worst_input(4), vec![1, 3, 2, 0]);
     }
 }
