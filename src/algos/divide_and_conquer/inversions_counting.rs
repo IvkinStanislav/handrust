@@ -1,20 +1,27 @@
-pub fn inversions_counting(data: &mut Vec<usize>) -> usize {
+pub fn inversions_counting(mut data: Vec<usize>) -> usize {
+    inversions_counting_internal(&mut data, false)
+}
+
+pub fn semi_inversions_counting(mut data: Vec<usize>) -> usize {
+    inversions_counting_internal(&mut data, true)
+}
+
+fn inversions_counting_internal(data: &mut Vec<usize>, is_semi_inversions: bool) -> usize {
     if data.len() <= 1 {
         return 0;
     }
 
-    let (left, right) = data.split_at(data.len() / 2);
-    let (mut left, mut right) = (left.to_vec(), right.to_vec());
+    let mut right = data.split_off(data.len() / 2);
 
-    let left_inversions = inversions_counting(&mut left);
-    let right_inversions = inversions_counting(&mut right);
-    let (new_data, merge_inversions) = merge(&left, &right);
+    let left_inversions = inversions_counting_internal(data, is_semi_inversions);
+    let right_inversions = inversions_counting_internal(&mut right, is_semi_inversions);
+    let (new_data, merge_inversions) = merge(&data, &right, is_semi_inversions);
     *data = new_data;
 
     left_inversions + right_inversions + merge_inversions
 }
 
-fn merge(left: &[usize], right: &[usize]) -> (Vec<usize>, usize) {
+fn merge(left: &[usize], right: &[usize], is_semi_inversions: bool) -> (Vec<usize>, usize) {
     use std::cmp::Ordering::*;
 
     let mut result = Vec::with_capacity(left.len() + right.len());
@@ -25,35 +32,28 @@ fn merge(left: &[usize], right: &[usize]) -> (Vec<usize>, usize) {
 
     loop {
         match (l_next, r_next) {
-            (Some(&l), Some(&r)) => match l.cmp(&r) {
-                Less | Equal => {
+            (Some(&l), Some(&r)) => {
+                if matches!(l.cmp(&r), Less) | matches!(l.cmp(&r), Equal if !is_semi_inversions) {
                     result.push(l);
                     l_next = left.next();
                     left_len -= 1;
-                }
-                Greater => {
-                    inversions_count += left_len;
+                } else {
                     result.push(r);
                     r_next = right.next();
+                    inversions_count += left_len;
                 }
-            },
-            (Some(&l), None) => {
-                result.push(l);
-                l_next = left.next();
             }
-            (None, Some(&r)) => {
-                result.push(r);
-                r_next = right.next();
+            (Some(&e), None) | (None, Some(&e)) => {
+                result.push(e);
+                result.extend(left);
+                result.extend(right);
+                break;
             }
             (None, None) => break,
         }
     }
 
     (result, inversions_count)
-}
-
-pub fn semi_inversion_counting(data: Vec<usize>) -> usize {
-    todo!()
 }
 
 /// ascending
@@ -72,22 +72,19 @@ mod tests {
 
     #[test]
     fn inversions_counting_test() {
-        assert_eq!(inversions_counting(&mut vec![2, 3, 9, 2]), 2);
-        assert_eq!(inversions_counting(&mut vec![1, 1, 1]), 0);
-        assert_eq!(inversions_counting(&mut vec![5, 1, 4, 2, 3, 6, 7, 9, 8]), 7);
-        assert_eq!(inversions_counting(&mut vec![5, 1, 4]), 2);
-        assert_eq!(
-            inversions_counting(&mut vec![1, 2, 1, 2, 1, 2, 3, 1, 3, 1]),
-            12
-        );
+        assert_eq!(inversions_counting(vec![2, 3, 9, 2]), 2);
+        assert_eq!(inversions_counting(vec![1, 1, 1]), 0);
+        assert_eq!(inversions_counting(vec![5, 1, 4, 2, 3, 6, 7, 9, 8]), 7);
+        assert_eq!(inversions_counting(vec![5, 1, 4]), 2);
+        assert_eq!(inversions_counting(vec![1, 2, 1, 2, 1, 2, 3, 1, 3, 1]), 12);
     }
 
     #[test]
-    fn semi_inversion_counting_test() {
-        assert_eq!(semi_inversion_counting(vec![2, 3, 9, 2, 9]), 4);
-        assert_eq!(semi_inversion_counting(vec![1, 1, 1]), 3);
+    fn semi_inversions_counting_test() {
+        assert_eq!(semi_inversions_counting(vec![2, 3, 9, 2, 9]), 4);
+        assert_eq!(semi_inversions_counting(vec![1, 1, 1]), 3);
         assert_eq!(
-            semi_inversion_counting(vec![1, 2, 1, 2, 1, 2, 3, 1, 3, 1]),
+            semi_inversions_counting(vec![1, 2, 1, 2, 1, 2, 3, 1, 3, 1]),
             26
         );
     }
