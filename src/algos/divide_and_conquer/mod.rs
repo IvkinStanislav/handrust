@@ -25,7 +25,7 @@ impl<T: Ord, I: Iterator<Item = T>> Iterator for MergeIterator<I> {
         use std::cmp::Ordering::*;
 
         match (self.iter1.peek(), self.iter2.peek()) {
-            (Some(e1), Some(e2)) => match e1.cmp(&e2) {
+            (Some(e1), Some(e2)) => match e1.cmp(e2) {
                 Less | Equal => self.iter1.next(),
                 Greater => self.iter2.next(),
             },

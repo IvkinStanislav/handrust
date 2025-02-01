@@ -15,7 +15,7 @@ fn inversions_counting_internal(data: &mut Vec<usize>, is_semi_inversions: bool)
 
     let left_inversions = inversions_counting_internal(data, is_semi_inversions);
     let right_inversions = inversions_counting_internal(&mut right, is_semi_inversions);
-    let (new_data, merge_inversions) = merge(&data, &right, is_semi_inversions);
+    let (new_data, merge_inversions) = merge(data, &right, is_semi_inversions);
     *data = new_data;
 
     left_inversions + right_inversions + merge_inversions
@@ -57,13 +57,20 @@ fn merge(left: &[usize], right: &[usize], is_semi_inversions: bool) -> (Vec<usiz
 }
 
 /// ascending
-pub fn transposition_counting_1(data: Vec<usize>) -> usize {
-    todo!()
+pub fn transpositions_counting(data: Vec<usize>) -> usize {
+    inversions_counting(data)
 }
 
 /// x,x+1,…,n,1,2,…,x−1.
-pub fn transposition_counting_2(data: Vec<usize>) -> usize {
-    todo!()
+pub fn semi_transpositions_counting(data: Vec<usize>) -> usize {
+    let mut min = usize::MAX;
+    for i in 0..data.len() - 1 {
+        let (left, right) = data.split_at(i);
+        let left_inversions = inversions_counting(left.to_vec());
+        let right_inversions = inversions_counting(right.to_vec());
+        min = min.min(left_inversions + right_inversions);
+    }
+    min
 }
 
 #[cfg(test)]
@@ -90,12 +97,12 @@ mod tests {
     }
 
     #[test]
-    fn transposition_counting_test() {
-        assert_eq!(transposition_counting_1(vec![3, 5, 4, 2, 1]), 8);
+    fn transpositions_counting_test() {
+        assert_eq!(transpositions_counting(vec![3, 5, 4, 2, 1]), 8);
     }
 
     #[test]
-    fn _test() {
-        assert_eq!(transposition_counting_2(vec![3, 5, 4, 2, 1]), 2);
+    fn semitranspositions_counting_test() {
+        assert_eq!(semi_transpositions_counting(vec![3, 5, 4, 2, 1]), 2);
     }
 }
