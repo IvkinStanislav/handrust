@@ -10,7 +10,7 @@ pub mod souvenirs;
 
 pub struct Matrix<T> {
     data: Vec<T>,
-    row_len: usize
+    row_len: usize,
 }
 
 impl<T: Clone> Matrix<T> {
@@ -24,7 +24,7 @@ impl<T: Clone> Matrix<T> {
 
 impl<T> Matrix<T> {
     fn get_row_range(&self, row_index: usize) -> Range<usize> {
-        row_index * self.row_len .. (row_index + 1) * self.row_len
+        row_index * self.row_len..(row_index + 1) * self.row_len
     }
 }
 
@@ -36,7 +36,6 @@ impl<T> Index<usize> for Matrix<T> {
         &self.data[row_range]
     }
 }
-
 
 impl<T> IndexMut<usize> for Matrix<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
