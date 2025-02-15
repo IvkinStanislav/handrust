@@ -8,6 +8,7 @@ pub mod lcs;
 pub mod place_brackets;
 pub mod souvenirs;
 
+#[derive(Debug)]
 pub struct Matrix<T> {
     data: Vec<T>,
     row_len: usize,
