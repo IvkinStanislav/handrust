@@ -138,7 +138,28 @@ pub fn editing_distance_detailed(s1: &str, s2: &str) -> Vec<String> {
 }
 
 pub fn editing_distance_improved(s1: &str, s2: &str) -> usize {
-    todo!()
+    let (s1, s2) = if s1.len() < s2.len() {
+        (s2, s1)
+    } else {
+        (s1, s2)
+    };
+    let s1: Vec<_> = s1.chars().collect();
+    let s2: Vec<_> = s2.chars().collect();
+
+    let mut dp_previous: Vec<_> = (0..=s2.len()).collect();
+    let mut dp_current = dp_previous.clone();
+
+    for i in 1..=s1.len() {
+        dp_current[0] = i;
+        for j in 1..=s2.len() {
+            let deletion = dp_previous[j] + 1;
+            let insertion = dp_current[j - 1] + 1;
+            let replacement = dp_previous[j - 1] + if s1[i - 1] == s2[j - 1] { 0 } else { 1 };
+            dp_current[j] = replacement.min(insertion).min(deletion);
+        }
+        std::mem::swap(&mut dp_previous, &mut dp_current);
+    }
+    dp_previous[s2.len()]
 }
 
 #[cfg(test)]
@@ -162,9 +183,13 @@ mod tests {
         // r 4 4 3 2 3 4
         // t 5 5 4 3 2 3
         editing_distance_test_internal("short", "ports", vec!["short", "hort", "port", "ports"]);
-        // editing_distance_test_internal("a", "a", vec!["a"]);
-        // editing_distance_test_internal("ada", "aba", vec!["ada", "aba"]);
-        // editing_distance_test_internal("abacab", "bacacaba", vec!["abacab", "babacab", "bacacab", "bacacaba"]);
-        // editing_distance_test_internal("aaaaaac", "caaaaaa", vec!["aaaaaac", "caaaaac", "caaaaaa"]);
+        editing_distance_test_internal("a", "a", vec!["a"]);
+        editing_distance_test_internal("ada", "aba", vec!["ada", "aba"]);
+        editing_distance_test_internal(
+            "abacab",
+            "bacacaba",
+            vec!["abacab", "babacab", "bacacab", "bacacaba"],
+        );
+        editing_distance_test_internal("aaaaaac", "caaaaaa", vec!["aaaaaac", "caaaaac", "caaaaaa"]);
     }
 }
