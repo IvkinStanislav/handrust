@@ -1,9 +1,5 @@
 pub fn fac(n: usize) -> usize {
-    if n == 0 {
-        1
-    } else {
-        n * fac(n - 1)
-    }
+    if n == 0 { 1 } else { n * fac(n - 1) }
 }
 
 pub fn c(n: usize, k: usize) -> usize {
