@@ -16,8 +16,8 @@ fn editing_distance_rec_internal(s1: &[char], s2: &[char], dp: &mut Matrix<usize
     };
 
     let (i, j) = (s1.len() - 1, s2.len() - 1);
-    if dp[i][j] != usize::MAX {
-        return dp[i][j];
+    if dp[(i, j)] != usize::MAX {
+        return dp[(i, j)];
     }
 
     let deletion = editing_distance_rec_internal(s1_remainder, s2, dp) + 1;
@@ -25,32 +25,32 @@ fn editing_distance_rec_internal(s1: &[char], s2: &[char], dp: &mut Matrix<usize
     let replacement = editing_distance_rec_internal(s1_remainder, s2_remainder, dp)
         + if s1_last == s2_last { 0 } else { 1 };
 
-    dp[i][j] = replacement.min(insertion).min(deletion);
-    dp[i][j]
+    dp[(i, j)] = replacement.min(insertion).min(deletion);
+    dp[(i, j)]
 }
 
 pub fn editing_distance(s1: &str, s2: &str) -> usize {
     let s1: Vec<_> = s1.chars().collect();
     let s2: Vec<_> = s2.chars().collect();
     let dp = create_matrix(&s1, &s2);
-    dp[s1.len()][s2.len()]
+    dp[(s1.len(), s2.len())]
 }
 
 fn create_matrix(s1: &[char], s2: &[char]) -> Matrix<usize> {
     let mut dp = Matrix::new_with_init_value(usize::MAX, s1.len() + 1, s2.len() + 1);
 
     for i in 0..=s1.len() {
-        dp[i][0] = i;
+        dp[(i, 0)] = i;
     }
     for j in 0..=s2.len() {
-        dp[0][j] = j;
+        dp[(0, j)] = j;
     }
     for i in 1..=s1.len() {
         for j in 1..=s2.len() {
-            let deletion = dp[i - 1][j] + 1;
-            let insertion = dp[i][j - 1] + 1;
-            let replacement = dp[i - 1][j - 1] + if s1[i - 1] == s2[j - 1] { 0 } else { 1 };
-            dp[i][j] = replacement.min(insertion).min(deletion);
+            let deletion = dp[(i - 1, j)] + 1;
+            let insertion = dp[(i, j - 1)] + 1;
+            let replacement = dp[(i - 1, j - 1)] + if s1[i - 1] == s2[j - 1] { 0 } else { 1 };
+            dp[(i, j)] = replacement.min(insertion).min(deletion);
         }
     }
     dp
@@ -71,14 +71,14 @@ pub fn editing_distance_detailed(s1: &str, s2: &str) -> Vec<String> {
     let s2: Vec<_> = s2.chars().collect();
     let dp = create_matrix(&s1, &s2);
 
-    let mut operations = Vec::with_capacity(dp[s1.len()][s2.len()]);
+    let mut operations = Vec::with_capacity(dp[(s1.len(), s2.len())]);
     let (mut i, mut j) = (s1.len(), s2.len());
 
     while i > 0 && j > 0 {
-        let deletion = dp[i - 1][j];
-        let insertion = dp[i][j - 1];
-        let replacement = dp[i - 1][j - 1];
-        let save_in_replacement = replacement == dp[i][j];
+        let deletion = dp[(i - 1, j)];
+        let insertion = dp[(i, j - 1)];
+        let replacement = dp[(i - 1, j - 1)];
+        let save_in_replacement = replacement == dp[(i, j)];
         let min = replacement.min(insertion).min(deletion);
 
         let operation = if min == replacement {
