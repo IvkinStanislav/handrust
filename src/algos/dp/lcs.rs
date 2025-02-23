@@ -1,14 +1,8 @@
-use crate::algos::dp::Matrix;
+use crate::algos::dp::{Cube, Matrix};
 
 pub fn lcs(a: &[usize], b: &[usize]) -> usize {
-    let mut dp = Matrix::new_with_init_value(usize::MAX, a.len() + 1, b.len() + 1);
+    let mut dp: Matrix<usize> = Matrix::new(a.len() + 1, b.len() + 1);
 
-    for i in 0..=a.len() {
-        dp[(i, 0)] = 0;
-    }
-    for j in 0..=b.len() {
-        dp[(0, j)] = 0;
-    }
     for i in 1..=a.len() {
         for j in 1..=b.len() {
             let a_prefix = dp[(i - 1, j)];
@@ -46,7 +40,23 @@ pub fn lcs_improved(a: &[usize], b: &[usize]) -> usize {
 }
 
 pub fn lcs3(a: &[usize], b: &[usize], c: &[usize]) -> usize {
-    todo!()
+    let mut dp: Cube<usize> = Cube::new(a.len() + 1, b.len() + 1, c.len() + 1);
+
+    for i in 1..=a.len() {
+        for j in 1..=b.len() {
+            for k in 1..=c.len() {
+                let a_prefix = dp[(i - 1, j, k)];
+                let b_prefix = dp[(i, j - 1, k)];
+                let c_prefix = dp[(i, j, k - 1)];
+                dp[(i, j, k)] = a_prefix.max(b_prefix).max(c_prefix);
+                if a[i - 1] == b[j - 1] && a[i - 1] == c[k - 1] {
+                    let abc_prefixes = dp[(i - 1, j - 1, k - 1)] + 1;
+                    dp[(i, j, k)] = dp[(i, j, k)].max(abc_prefixes);
+                }
+            }
+        }
+    }
+    dp[(a.len(), b.len(), c.len())]
 }
 
 #[cfg(test)]
