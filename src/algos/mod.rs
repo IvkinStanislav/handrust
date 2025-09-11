@@ -1,3 +1,4 @@
+pub mod data_struct;
 pub mod divide_and_conquer;
 pub mod dp;
 pub mod greedy;
