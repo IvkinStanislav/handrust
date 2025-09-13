@@ -115,8 +115,6 @@ impl<T: Iterator<Item = LinkedListOperation>> Iterator for LinkedListOperationPe
 
 #[cfg(test)]
 mod tests {
-    use std::usize;
-
     use super::*;
 
     #[test]
